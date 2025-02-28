@@ -1,0 +1,99 @@
+# environmental variables
+#export arsenal=~/.env/arsenal
+export export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+
+# source bashrc file of admin
+source /home/energyinfo/.bashrc
+
+# alias for finding files more than 100MB
+alias whatishuge="find . -size +100000k -exec ls -alh {} \;"
+
+# alias for using tmux
+alias mkscreen="tmux new -s"
+alias lsscreen="tmux ls"
+alias openscreen="tmux attach -t"
+
+# alias for using symbolic link
+alias mkln="ln -s"
+
+# function for using virtual environment
+venv() {
+	source /mnt/hp/.env/$1/bin/activate
+	}
+
+# function for running python3
+run() {
+	python3 $1.py
+	}
+
+# function for using docker
+alias docker="sudo docker"
+
+# function for using kaggle environment
+kaggle() {
+    docker run --gpus 'all,"capabilities=compute,utility"' \
+    -v ~/space/data:/working/data -v ~/space/usb/:/working/ -w=/working \
+    -p 2022:22 -p 2088:8888 --rm -it gcr.io/deeplearning-platform-release/tf2-gpu.2-8:m93 bash \
+    -c "curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -; \
+    apt-key add /working/usr/Repo.keys; \
+    cp -R /working/usr/sources.list* /etc/apt/; \
+    apt-get update; \
+    apt-get install dselect && dselect update; \
+    dpkg --set-selections < /working/usr/Package.list; \
+    apt-get dselect-upgrade -y; \
+    apt clean && sudo apt autoclean; \
+    apt-get update | apt-get upgrade | apt-get install -y libgl1-mesa-glx; \
+    apt install -y openssh-server; \
+    rm -f /etc/ssh/sshd_config && cp /working/usr/sshd_config /etc/ssh/sshd_config; \
+    echo 'root:191201' | sudo chpasswd; \
+    service ssh start; \
+    pip install pyts; \
+    pip install tornado; \
+    pip install opencv-python; \
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64; \
+    pip install --upgrade 'jupyter-server<2.0.0'; \
+    pip install jupyter_contrib_nbextensions; \
+    pip install jupyter_nbextensions_configurator; \
+    cp /working/srcs/kaggle.json /root/.kaggle/kaggle.json; \
+    chmod 600 /root/.kaggle/kaggle.json; \
+    jupyter contrib nbextension install --user; \
+    jupyter nbextensions_configurator enable --user; \
+    jupyter notebook --NotebookApp.password='sha1:7f32c5975376:65a231ad98442dd233b7177079dd10c862c48b63' --notebook-dir=/working --ip='*' --port=8888 --no-browser --allow-root"
+}
+
+mkcontainer() {
+    docker run --gpus 'all,"capabilities=compute,utility"' \
+    -v ~/space/data:/working/data -v $1/:/working/ -w=/working \
+    -p 20$2:22 -p 20$3:8888 --rm -it gcr.io/deeplearning-platform-release/tf2-gpu.2-8:m93 bash \
+    -c "curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -; \
+    apt-key add /working/usr/Repo.keys; \
+    cp -R /working/usr/sources.list* /etc/apt/; \
+    apt-get update; \
+    apt-get install dselect && dselect update; \
+    dpkg --set-selections < /working/usr/Package.list; \
+    apt-get dselect-upgrade -y; \
+    apt clean && sudo apt autoclean; \
+    apt-get update | apt-get upgrade | apt-get install -y libgl1-mesa-glx; \
+    apt install -y openssh-server; \
+    rm -f /etc/ssh/sshd_config && cp /working/usr/sshd_config /etc/ssh/sshd_config; \
+    echo 'root:191201' | sudo chpasswd; \
+    service ssh start; \
+    pip install pyts; \
+    pip install tornado; \
+    pip install opencv-python; \
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64; \
+    pip install --upgrade 'jupyter-server<2.0.0'; \
+    pip install jupyter_contrib_nbextensions; \
+    pip install jupyter_nbextensions_configurator; \
+    cp /working/srcs/kaggle.json /root/.kaggle/kaggle.json; \
+    chmod 600 /root/.kaggle/kaggle.json; \
+    jupyter contrib nbextension install --user; \
+    jupyter nbextensions_configurator enable --user; \
+    jupyter notebook --NotebookApp.password='sha1:7f32c5975376:65a231ad98442dd233b7177079dd10c862c48b63' --notebook-dir=/working --ip='*' --port=8888 --no-browser --allow-root"
+}
+
+push() {
+    sudo git add $1;\
+    git commit -m $2;\
+    git push -u origin main    
+}
